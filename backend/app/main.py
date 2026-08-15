@@ -1,4 +1,8 @@
 from fastapi import FastAPI
+from sqlalchemy import text
+
+from app.database import engine
+
 
 app = FastAPI(
     title="AI Customer Service Agent",
@@ -12,4 +16,15 @@ def health_check():
     return {
         "status": "ok",
         "service": "ai-customer-service-agent",
+    }
+
+
+@app.get("/health/database")
+def database_health_check():
+    with engine.connect() as connection:
+        connection.execute(text("SELECT 1"))
+
+    return {
+        "status": "ok",
+        "database": "connected",
     }
