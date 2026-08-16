@@ -1,3 +1,6 @@
+AI Customer Service Agent — Full-stack AI customer service platform using FastAPI, PostgreSQL, SQLAlchemy, and LLM integration, implementing persistent conversation memory, modular service architecture, and RESTful APIs.
+
+
 PHASE 1
 Database
    ✓ PostgreSQL
