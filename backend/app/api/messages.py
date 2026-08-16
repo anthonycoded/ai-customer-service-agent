@@ -7,6 +7,7 @@ from app.services.message_service import (
     create_message,
     get_conversation_messages,
 )
+from app.services.ai_service import AIService
 
 
 router = APIRouter(
@@ -49,6 +50,28 @@ def get_messages(
 ):
     try:
         return get_conversation_messages(
+            db,
+            conversation_id,
+        )
+
+    except ValueError as error:
+        raise HTTPException(
+            status_code=404,
+            detail=str(error),
+        )
+
+@router.post(
+    "/ai",
+    response_model=MessageResponse,
+)
+def generate_ai_response(
+    conversation_id: int,
+    db: Session = Depends(get_db),
+):
+    ai_service = AIService()
+
+    try:
+        return ai_service.generate_response(
             db,
             conversation_id,
         )
