@@ -3,7 +3,7 @@ from sqlalchemy import text
 
 from app.database import Base, engine
 from app.models import Customer, Conversation, Message
-
+from app.api.customers import router as customers_router
 
 Base.metadata.create_all(bind=engine)
 
@@ -13,6 +13,7 @@ app = FastAPI(
     description="AI-powered customer service API",
     version="0.1.0",
 )
+app.include_router(customers_router)
 
 
 @app.get("/health")
