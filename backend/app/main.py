@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from sqlalchemy import text
+from contextlib import asynccontextmanager
 
 from app.database import Base, engine
 from app.models import Customer, Conversation, Message
@@ -7,11 +8,16 @@ from app.api.customers import router as customers_router
 from app.api.conversations import router as conversations_router
 from app.api.messages import router as messages_router
 
-Base.metadata.create_all(bind=engine)
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
+
+    yield
 
 
 app = FastAPI(
     title="AI Customer Service Agent",
+    lifespan=lifespan,
     description="AI-powered customer service API",
     version="0.1.0",
 )
