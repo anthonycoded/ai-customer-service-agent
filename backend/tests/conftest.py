@@ -1,14 +1,16 @@
 import os
 
-os.environ["DATABASE_URL"] = (
-    "postgresql+psycopg://postgres:postgres@localhost:5433/"
-    "ai_customer_service_test"
-)
-
-
 from app.database import Base, engine
 from app.models import Customer, Conversation, Message
 
 
 def pytest_configure():
     Base.metadata.create_all(bind=engine)
+
+
+def pytest_runtest_teardown(item, nextitem):
+    with engine.begin() as connection:
+        # Delete dependent records first
+        connection.execute(Message.__table__.delete())
+        connection.execute(Conversation.__table__.delete())
+        connection.execute(Customer.__table__.delete())
