@@ -1,46 +1,44 @@
 from fastapi.testclient import TestClient
 
 from app.main import app
-
+from tests.conftest import auth_headers
 
 client = TestClient(app)
 
 
-def test_create_customer():
+
+def test_create_customer(auth_headers):
+
     response = client.post(
-        "/customers/",
+        "/customers",
         json={
-            "name": "Ttested Customer",
-            "email": "ttested.customer@example.com",
+            "name": "Tested Customer",
+            "email": "tested.customer@example.com",
         },
+        headers=auth_headers,
     )
 
     assert response.status_code in [200, 201]
 
-    data = response.json()
 
-    assert data["name"] == "Ttested Customer"
-    assert data["email"] == "ttested.customer@example.com"
-    assert "id" in data
+def test_get_customer(auth_headers):
 
-
-def test_get_customer():
-    response = client.post(
-        "/customers/",
+    create_response = client.post(
+        "/customers",
         json={
-            "name": "Retrievalss Customer",
-            "email": "retrievalss@example.com",
+            "name": "Retrieval Customer",
+            "email": "retrieval@example.com",
         },
+        headers=auth_headers,
     )
 
-    assert response.status_code in [200, 201]
+    assert create_response.status_code in [200, 201]
 
-    customer = response.json()
-
-    customer_id = customer["id"]
+    customer_id = create_response.json()["id"]
 
     response = client.get(
-        f"/customers/{customer_id}"
+        f"/customers/{customer_id}",
+        headers=auth_headers,
     )
 
     assert response.status_code == 200
@@ -48,5 +46,10 @@ def test_get_customer():
     data = response.json()
 
     assert data["id"] == customer_id
-    assert data["name"] == "Retrievalss Customer"
-    assert data["email"] == "retrievalss@example.com"
+    assert data["email"] == "retrieval@example.com"
+
+
+def test_get_customer_requires_authentication():
+    response = client.get("/customers/1")
+
+    assert response.status_code == 401

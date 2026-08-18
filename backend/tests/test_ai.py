@@ -7,7 +7,7 @@ from app.services.ai_service import AIService
 client = TestClient(app)
 
 
-def test_ai_generates_response(monkeypatch):
+def test_ai_generates_response(monkeypatch, auth_headers):
 
     customer_response = client.post(
         "/customers/",
@@ -15,6 +15,7 @@ def test_ai_generates_response(monkeypatch):
             "name": "Test Customer",
             "email": "test.customer@example.com",
         },
+        headers=auth_headers
     )
 
     assert customer_response.status_code in [200, 201]
@@ -26,6 +27,7 @@ def test_ai_generates_response(monkeypatch):
         json={
             "customer_id": customer["id"],
         },
+        headers=auth_headers
     )
 
     assert conversation_response.status_code in [200, 201]
@@ -41,6 +43,7 @@ def test_ai_generates_response(monkeypatch):
             "role": "user",
             "content": "I need help with my order.",
         },
+        headers=auth_headers
     )
 
     assert message_response.status_code in [200, 201]
@@ -56,7 +59,8 @@ def test_ai_generates_response(monkeypatch):
 
     # Call AI endpoint
     response = client.post(
-        f"/conversations/{conversation_id}/messages/ai"
+        f"/conversations/{conversation_id}/messages/ai",
+        headers=auth_headers
     )
 
     assert response.status_code in [200, 201]
@@ -69,19 +73,15 @@ def test_ai_generates_response(monkeypatch):
     )
     assert data["conversation_id"] == conversation_id
 
-def mock_generate_response(self, messages):
-    assert messages[0]["role"] == "system"
-    assert messages[1]["role"] == "user"
 
-    return "Mock response"
-
-def test_ai_uses_conversation_history(monkeypatch):
+def test_ai_uses_conversation_history(monkeypatch, auth_headers):
     customer_response = client.post(
         "/customers/",
         json={
             "name": "Test Customer",
             "email": "test.customer@example.com",
         },
+        headers=auth_headers
     )
 
     assert customer_response.status_code in [200, 201]
@@ -93,6 +93,7 @@ def test_ai_uses_conversation_history(monkeypatch):
         json={
             "customer_id": customer["id"],
         },
+        headers=auth_headers
     )
 
     assert conversation_response.status_code in [200, 201]
@@ -107,6 +108,7 @@ def test_ai_uses_conversation_history(monkeypatch):
             "role": "user",
             "content": "My order number is 12345.",
         },
+        headers=auth_headers
     )
 
     # Second message
@@ -116,6 +118,7 @@ def test_ai_uses_conversation_history(monkeypatch):
             "role": "assistant",
             "content": "Thank you. I have your order number.",
         },
+        headers=auth_headers
     )
 
     # New user message
@@ -125,6 +128,7 @@ def test_ai_uses_conversation_history(monkeypatch):
             "role": "user",
             "content": "Can you check its status?",
         },
+        headers=auth_headers
     )
 
     captured_messages = []
@@ -140,7 +144,8 @@ def test_ai_uses_conversation_history(monkeypatch):
     )
 
     response = client.post(
-        f"/conversations/{conversation_id}/messages/ai"
+        f"/conversations/{conversation_id}/messages/ai",
+        headers=auth_headers
     )
 
     assert response.status_code in [200, 201]

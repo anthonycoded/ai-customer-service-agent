@@ -6,7 +6,7 @@ from app.main import app
 client = TestClient(app)
 
 
-def test_create_conversation():
+def test_create_conversation(auth_headers):
     # Create customer
     customer_response = client.post(
         "/customers/",
@@ -14,6 +14,7 @@ def test_create_conversation():
             "name": "Conversation Customer",
             "email": "conversation@example.com",
         },
+        headers=auth_headers
     )
 
     assert customer_response.status_code in [200, 201]
@@ -26,6 +27,7 @@ def test_create_conversation():
         json={
             "customer_id": customer["id"],
         },
+        headers=auth_headers
     )
 
     assert response.status_code in [200, 201]
