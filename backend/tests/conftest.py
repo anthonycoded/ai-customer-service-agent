@@ -2,6 +2,7 @@ import os
 
 from app.database import Base, engine
 from app.models import Customer, Conversation, Message
+from app.models.user import User
 
 
 def pytest_configure():
@@ -14,3 +15,4 @@ def pytest_runtest_teardown(item, nextitem):
         connection.execute(Message.__table__.delete())
         connection.execute(Conversation.__table__.delete())
         connection.execute(Customer.__table__.delete())
+        connection.execute(User.__table__.delete())
