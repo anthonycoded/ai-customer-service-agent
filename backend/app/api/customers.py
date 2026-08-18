@@ -4,7 +4,8 @@ from sqlalchemy.orm import Session
 from app.database import get_db
 from app.models.customer import Customer
 from app.schemas.customer import CustomerCreate, CustomerResponse
-
+from app.dependencies import get_current_user
+from app.models.user import User
 
 router = APIRouter(
     prefix="/customers",
@@ -20,6 +21,7 @@ router = APIRouter(
 def create_customer(
     customer_data: CustomerCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     existing_customer = (
         db.query(Customer)
@@ -52,6 +54,7 @@ def create_customer(
 def get_customer(
     customer_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     customer = (
         db.query(Customer)

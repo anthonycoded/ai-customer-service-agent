@@ -2,7 +2,9 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.dependencies import get_current_user
 from app.models.conversation import Conversation
+from app.models.user import User
 from app.schemas.conversation import (
     ConversationCreate,
     ConversationResponse,
@@ -22,6 +24,7 @@ router = APIRouter(
 def create_conversation_endpoint(
     conversation_data: ConversationCreate,
     db: Session = Depends(get_db),
+current_user: User = Depends(get_current_user)
 ):
     try:
         return create_conversation(
@@ -43,6 +46,7 @@ def create_conversation_endpoint(
 def get_conversation(
     conversation_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     conversation = (
         db.query(Conversation)

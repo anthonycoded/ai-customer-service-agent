@@ -2,6 +2,8 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.dependencies import get_current_user
+from app.models.user import User
 from app.schemas.message import MessageCreate, MessageResponse
 from app.services.message_service import (
     create_message,
@@ -25,6 +27,7 @@ def create_message_endpoint(
     conversation_id: int,
     message_data: MessageCreate,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     try:
         return create_message(
@@ -47,6 +50,7 @@ def create_message_endpoint(
 def get_messages(
     conversation_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     try:
         return get_conversation_messages(
@@ -67,6 +71,7 @@ def get_messages(
 def generate_ai_response(
     conversation_id: int,
     db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
 ):
     ai_service = AIService()
 
