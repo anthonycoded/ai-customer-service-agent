@@ -1,12 +1,15 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from sqlalchemy import text
+from sqlalchemy.orm import Session
 from contextlib import asynccontextmanager
 
-from app.database import Base, engine
-from app.models import Customer, Conversation, Message
+from app.models import *
+from app.database import Base, engine, SessionLocal
 from app.api.customers import router as customers_router
 from app.api.conversations import router as conversations_router
 from app.api.messages import router as messages_router
+from app.api.auth import router as auth_router
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -24,6 +27,7 @@ app = FastAPI(
 app.include_router(customers_router)
 app.include_router(conversations_router)
 app.include_router(messages_router)
+app.include_router(auth_router)
 
 
 @app.get("/health")
